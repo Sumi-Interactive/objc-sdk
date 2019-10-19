@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-#import "QNALAssetFile.h"
-#import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
 
@@ -277,31 +275,6 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
-}
-
-- (void)putALAsset:(ALAsset *)asset
-               key:(NSString *)key
-             token:(NSString *)token
-          complete:(QNUpCompletionHandler)completionHandler
-            option:(QNUploadOption *)option {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
-    if ([QNUploadManager checkAndNotifyError:key token:token input:asset complete:completionHandler]) {
-        return;
-    }
-
-    @autoreleasepool {
-        NSError *error = nil;
-        __block QNALAssetFile *file = [[QNALAssetFile alloc] init:asset error:&error];
-        if (error) {
-            QNAsyncRunInMain(^{
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-                completionHandler(info, key, nil);
-            });
-            return;
-        }
-        [self putFileInternal:file key:key token:token complete:completionHandler option:option];
-    }
-#endif
 }
 
 - (void)putPHAsset:(PHAsset *)asset
